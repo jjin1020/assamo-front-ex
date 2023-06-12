@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async rewrites() {
+     return [
+              {
+                 source: "/board:path*",
+                 destination: "http://localhost:8081/:path*"
+              }
+     ]
+  }
 }
 
 module.exports = nextConfig
