@@ -11,7 +11,7 @@ export default function BoardList() {
                         익명게시판 목록
                     </title>
                 </Head>
-                <div className="bg-white px-4 py-12 sm:px-6 lg:px-8 min-h-screen">
+                <div className="px-4 py-12 sm:px-6 lg:px-8 min-h-screen">
                     <div className="mx-auto max-w-4xl">
                         <ul role="list" class="divide-y divide-gray-100">
                             <li class="flex justify-between gap-x-6 py-5">
