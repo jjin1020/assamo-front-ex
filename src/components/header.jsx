@@ -16,7 +16,7 @@ export default function Header() {
             <Link href="/" className="mr-5 hover:text-gray-900">
                 홈
             </Link>
-            <Link href="/projects" className="mr-5 hover:text-gray-900">
+            <Link href="/boards/board-list" className="mr-5 hover:text-gray-900">
                 게시판
             </Link>
           </nav>
