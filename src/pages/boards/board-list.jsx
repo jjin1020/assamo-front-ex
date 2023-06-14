@@ -1,7 +1,28 @@
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import Layout from "@/components/layout";
 import Head from "next/head";
+import { useEffect } from "react";
+import getBoardList from "../api/board";
 
 export default function BoardList() {
+
+    useEffect(() => {
+        const subscription = getBoardList().pipe(
+            map((data) => {
+                console.log(data);
+            }),
+            catchError((error) => {
+                console.log('Error', error);
+
+                return of(error);
+            })
+        ).subscribe();
+
+        return () => {
+            subscription.unsubscribe();
+        }
+    }, []);
 
     return (
         <>

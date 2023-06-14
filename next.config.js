@@ -4,8 +4,8 @@ const nextConfig = {
   async rewrites() {
      return [
               {
-                 source: "/board:path*",
-                 destination: "http://localhost:8081/:path*"
+                 source: "/:path*",
+                 destination: "http://localhost:8080/:path*"
               }
      ]
   }
