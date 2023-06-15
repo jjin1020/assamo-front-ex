@@ -31,7 +31,7 @@ export default function BoardList() {
             <Layout>
                 <Head>
                     <title>
-                        익명게시판 목록
+                        게시판 목록
                     </title>
                 </Head>
                 <div className="px-4 py-12 sm:px-6 lg:px-8 min-h-screen">

@@ -9,7 +9,7 @@ export default function PageNotFound() {
             <title>
               404
             </title>
-            <meta name="description" content='포트폴리오'></meta>
+            <meta name="description" content='404'></meta>
             <link rel="icon" href='/favicon.ico'></link>
           </Head>
           
