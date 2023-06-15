@@ -12,7 +12,7 @@ export default function Board() {
 
     const {bbsSen} = router.query;
 
-    const {register, handleSubmit, setValue} = useForm({
+    const {register, handleSubmit, setValue, getValues} = useForm({
         defaultValues: {
           bbsTyCd: 'A01001',
           gdniceUseYn: 'N',
@@ -58,6 +58,15 @@ export default function Board() {
         );
     };
 
+    const deleteData = (bbsSen) => {
+        return ajax.delete(`/api/bbs/deleteBoard/${bbsSen}`).pipe(
+            catchError(error =>{
+                console.error('Error occurred while deleting data', error);
+                return of(null);
+            })
+        );
+    }
+
     useEffect(() => {
         if (bbsSen != undefined && bbsSen != null) {
 
@@ -93,6 +102,13 @@ export default function Board() {
         }
       });
     };
+
+    const deleteClick = (event) => {
+        event.preventDefault();
+        deleteData(getValues('bbsSen')).subscribe(() => {
+            router.push('/boards/board-list');
+        });
+    }
 
     return (
         <>
@@ -245,8 +261,8 @@ export default function Board() {
                             </div>
 
                             <div className="mt-6 flex items-center justify-end gap-x-6">
-                                <button type="button" className="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
-                                <button type="submit" className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+                                <button type="button" className="text-sm font-semibold leading-6 text-gray-900" onClick={deleteClick}>삭제</button>
+                                <button type="submit" className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">저장</button>
                             </div>
                         </form>
                     </div>
