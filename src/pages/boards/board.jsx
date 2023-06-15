@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { catchError, map, of } from "rxjs";
+import { catchError, map, mergeMap, of } from "rxjs";
 import { ajax } from 'rxjs/ajax'
 
 
@@ -29,36 +29,60 @@ export default function Board() {
         setValue(targetName,targetValue);
     }
 
-    useEffect(() => {
-        const sub = ajax.getJSON(`/api/bbs/getBoard/${bbsSen}`).pipe(
-            map((data) => {
+    // Defining fetch function
+    const fetchData = (bbsSen) => {
+        return ajax.getJSON(`/api/bbs/getBoard/${bbsSen}`).pipe(
+        catchError(error => {
+            console.error('Error occurred while fetching data', error);
+            return of(null);
+        })
+        );
+    };
+    
+    const saveData = (data) => {
+        return ajax.post('/api/bbs/saveBoard', data).pipe(
+        catchError(error => {
+            console.error('Error occurred while saving data', error);
+            return of(null);
+        })
+        );
+    };
 
+    useEffect(() => {
+        if (bbsSen != undefined && bbsSen != null) {
+
+            const sub = fetchData(bbsSen).subscribe(data => {
                 for (let field in data) {
                     setValue(field, data[field]);
                   }
-            }),
-            catchError((error) => {
-                console.log('Error', error);
-
-                return of(error);
-            })
-
-        ).subscribe();
-
-        return () => {
-            sub.unsubscribe();
+            });
+    
+            return () => {
+                sub.unsubscribe();
+            }
         }
-
     }, []);
 
-    const onSubmit = data => {
-        ajax.post('/api/bbs/saveBoard', data).pipe(
-          catchError(error => {
-            console.error('Error:', error);
-            return of(error);
-          })
-        ).subscribe()
-    }
+    const onSubmit = (data) => {
+      saveData(data).pipe(
+        mergeMap(response => {
+          if (response && (response.status === 200)) {
+            return fetchData(response.response.bbsSen);
+          } else {
+            console.error('Error occurred while saving data');
+            return of(null);
+          }
+        })
+      ).subscribe(fetchedData => {
+        if (fetchedData) {
+            for (let field in data) {
+                setValue(field, data[field]);
+              }
+        } else {
+          console.error('Error occurred while fetching data');
+        }
+      });
+    };
 
     return (
         <>
