@@ -6,7 +6,7 @@ export default function Animation() {
             <Player
             autoplay
             loop
-            src='/animation.json'
+            src='/animation404.json'
             style={{ height: '300px', width: '500px' }}
             >
             </Player>
