@@ -17,6 +17,7 @@ export default function Board() {
           bbsTyCd: 'A01001',
           gdniceUseYn: 'N',
           scrtartcFnctYn: 'N',
+          anserFnctYn: 'N',
           answerFnctYn: 'N',
           annymtyFnctYn: 'N',
           sttemntFnctYn: 'N',
@@ -32,11 +33,20 @@ export default function Board() {
     // Defining fetch function
     const fetchData = (bbsSen) => {
         return ajax.getJSON(`/api/bbs/getBoard/${bbsSen}`).pipe(
-        catchError(error => {
-            console.error('Error occurred while fetching data', error);
-            return of(null);
-        })
+            catchError(error => {
+                console.error('Error occurred while fetching data', error);
+                return of(null);
+            })
         );
+
+        // return ajax({
+        //     url: `/api/bbs/getBoard/${bbsSen}`
+        //     , method: 'GET'
+        //     , headers: {
+        //         'Accept': 'application/json'
+        //     },
+        //     responseType: 'json'
+        // }).pipe(map(response => response.response));
     };
     
     const saveData = (data) => {
@@ -207,7 +217,7 @@ export default function Board() {
                                             <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                                             <div className="mt-6 space-y-6">
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="puannymtyFnctY" name="annymtyFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('annymtyFnctYn')} onChange={hanleChange}/>
+                                                    <input id="annymtyFnctY" name="annymtyFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('annymtyFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="annymtyFnctY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
                                                 </div>
                                                 <div className="flex items-center gap-x-3">

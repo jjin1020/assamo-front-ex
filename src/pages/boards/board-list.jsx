@@ -7,14 +7,11 @@ import BbsList from '@/components/bbs/bbs-list';
 import { ajax } from 'rxjs/ajax'
 
 export default function BoardList() {
-
-    
     const [boardList, setBoardList] = useState([]);
 
     useEffect(() => {
         const subscription = ajax.getJSON('/api/bbs/list').pipe(
             map((data) => {
-                console.log(data);
                 setBoardList(data);
             }),
             catchError((error) => {
