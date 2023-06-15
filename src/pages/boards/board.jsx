@@ -2,26 +2,40 @@ import Layout from "@/components/layout";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { catchError, map, of } from "rxjs";
 import { ajax } from 'rxjs/ajax'
+
 
 export default function Board() {
     const router = useRouter();
 
     const {bbsSen} = router.query;
 
-    const [board, setBoard] = useState({});
+    const {register, handleSubmit, setValue} = useForm({
+        defaultValues: {
+          bbsTyCd: 'A01001',
+          gdniceUseYn: 'N',
+          scrtartcFnctYn: 'N',
+          answerFnctYn: 'N',
+          annymtyFnctYn: 'N',
+          sttemntFnctYn: 'N',
+        }
+      });
 
     const hanleChange = (event) => {
         const targetName = event.target.name;
         const targetValue = event.target.value === undefined ? '' : event.target.value;
-        setBoard({targetName: targetValue});
+        setValue(targetName,targetValue);
     }
 
     useEffect(() => {
         const sub = ajax.getJSON(`/api/bbs/getBoard/${bbsSen}`).pipe(
             map((data) => {
-                setBoard(data);
+
+                for (let field in data) {
+                    setValue(field, data[field]);
+                  }
             }),
             catchError((error) => {
                 console.log('Error', error);
@@ -37,6 +51,15 @@ export default function Board() {
 
     }, []);
 
+    const onSubmit = data => {
+        ajax.post('/api/bbs/saveBoard', data).pipe(
+          catchError(error => {
+            console.error('Error:', error);
+            return of(error);
+          })
+        ).subscribe()
+    }
+
     return (
         <>
             <Layout>
@@ -47,7 +70,7 @@ export default function Board() {
                 </Head>
                 <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 min-h-screen">
                     <div className="mx-auto max-w-2xl">
-                        <form>
+                        <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="space-y-12">
                                 <div className="border-b border-gray-900/10 pb-12">
                                     <h2 className="text-base font-semibold leading-7 text-gray-900">게시판 생성</h2>
@@ -57,7 +80,7 @@ export default function Board() {
                                         <div className="sm:col-span-3">
                                             <label htmlFor="bbsTyCd" className="block text-sm font-medium leading-6 text-gray-900">게시판 유형</label>
                                             <div className="mt-2">
-                                                <select id="bbsTyCd" name="bbsTyCd" autoComplete="country-name" value={board.bbsTyCd} onChange={hanleChange} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                <select id="bbsTyCd" name="bbsTyCd" autoComplete="country-name" {...register('bbsTyCd')} onChange={hanleChange} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                                     <option value="A01001">일반 게시판</option>
                                                     <option value="A01002">메모 게시판</option>
                                                     <option value="A01003">사진 게시판</option>
@@ -66,11 +89,11 @@ export default function Board() {
                                             </div>
                                         </div>
 
-                                        <div className="sm:col-span-4">
+                                        <div className="col-span-full">
                                             <label htmlFor="bbsNae" className="block text-sm font-medium leading-6 text-gray-900">게시판 명</label>
                                             <div className="mt-2">
                                                 <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                                    <input type="text" name="bbsNae" id="bbsNae" autoComplete="bbsNae" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="janesmith" value={board.bbsNae} onChange={hanleChange}/>
+                                                    <input type="text" name="bbsNae" id="bbsNae" autoComplete="bbsNae" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="janesmith" {...register('bbsNae')} onChange={hanleChange}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -78,9 +101,18 @@ export default function Board() {
                                         <div className="col-span-full">
                                             <label htmlFor="bbsDescript" className="block text-sm font-medium leading-6 text-gray-900">게시판 설명</label>
                                             <div className="mt-2">
-                                                <textarea id="bbsDescript" name="bbsDescript" rows="3" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={board.bbsDescript} onChange={hanleChange}></textarea>
+                                                <textarea id="bbsDescript" name="bbsDescript" rows="3" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" {...register('bbsDescript')} onChange={hanleChange}></textarea>
                                             </div>
                                             <p className="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about yourself.</p>
+                                        </div>
+
+                                        <div className="sm:col-span-4">
+                                            <label htmlFor="bbsNae" className="block text-sm font-medium leading-6 text-gray-900">게시판 순서</label>
+                                            <div className="mt-2">
+                                                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                                                    <input type="text" name="sortOrd" id="sortOrd" autoComplete="sortOrd" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" {...register('sortOrd')} onChange={hanleChange}/>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -95,11 +127,11 @@ export default function Board() {
                                             <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                                             <div className="mt-6 space-y-6">
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="gdniceUseY" name="gdniceUseYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" checked={board.gdniceUseYn === 'Y'} onChange={hanleChange}/>
+                                                    <input id="gdniceUseY" name="gdniceUseYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('gdniceUseYn')} onChange={hanleChange}/>
                                                     <label htmlFor="gdniceUseY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
                                                 </div>
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="gdniceUseN" name="gdniceUseYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" checked={board.gdniceUseYn === 'N' || board.gdniceUseYn === null} onChange={hanleChange}/>
+                                                    <input id="gdniceUseN" name="gdniceUseYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" {...register('gdniceUseYn')} onChange={hanleChange}/>
                                                     <label htmlFor="gdniceUseN" className="block text-sm font-medium leading-6 text-gray-900">미사용</label>
                                                 </div>
                                             </div>
@@ -109,11 +141,11 @@ export default function Board() {
                                             <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                                             <div className="mt-6 space-y-6">
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="scrtartcFnctY" name="scrtartcFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" checked={board.scrtartcFnctYn === 'Y'} onChange={hanleChange}/>
+                                                    <input id="scrtartcFnctY" name="scrtartcFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('scrtartcFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="scrtartcFnctY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
                                                 </div>
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="scrtartcFnctN" name="scrtartcFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" checked={board.scrtartcFnctYn === 'N' || board.scrtartcFnctYn === null} onChange={hanleChange}/>
+                                                    <input id="scrtartcFnctN" name="scrtartcFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" {...register('scrtartcFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="scrtartcFnctN" className="block text-sm font-medium leading-6 text-gray-900">미사용</label>
                                                 </div>
                                             </div>
@@ -123,11 +155,11 @@ export default function Board() {
                                             <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                                             <div className="mt-6 space-y-6">
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="anserFnctY" name="anserFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" checked={board.anserFnctYn === 'Y'} onChange={hanleChange}/>
+                                                    <input id="anserFnctY" name="anserFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('anserFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="anserFnctY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
                                                 </div>
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="anserFnctN" name="anserFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" checked={board.anserFnctYn === 'N' || board.anserFnctYn === null} onChange={hanleChange}/>
+                                                    <input id="anserFnctN" name="anserFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" {...register('anserFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="anserFnctN" className="block text-sm font-medium leading-6 text-gray-900">미사용</label>
                                                 </div>
                                             </div>
@@ -137,11 +169,11 @@ export default function Board() {
                                             <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                                             <div className="mt-6 space-y-6">
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="answerFnctY" name="answerFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" checked={board.answerFnctYn === 'Y'} onChange={hanleChange}/>
+                                                    <input id="answerFnctY" name="answerFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('answerFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="answerFnctY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
                                                 </div>
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="answerFnctN" name="answerFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" checked={board.answerFnctYn === 'N' || board.answerFnctYn === null} onChange={hanleChange}/>
+                                                    <input id="answerFnctN" name="answerFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" {...register('answerFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="answerFnctN" className="block text-sm font-medium leading-6 text-gray-900">미사용</label>
                                                 </div>
                                             </div>
@@ -151,11 +183,11 @@ export default function Board() {
                                             <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                                             <div className="mt-6 space-y-6">
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="puannymtyFnctY" name="annymtyFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" checked={board.annymtyFnctYn === 'Y'} onChange={hanleChange}/>
+                                                    <input id="puannymtyFnctY" name="annymtyFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('annymtyFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="annymtyFnctY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
                                                 </div>
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="annymtyFnctN" name="annymtyFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" checked={board.annymtyFnctYn === 'N' || board.annymtyFnctYn === null} onChange={hanleChange}/>
+                                                    <input id="annymtyFnctN" name="annymtyFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" {...register('annymtyFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="annymtyFnctN" className="block text-sm font-medium leading-6 text-gray-900">미사용</label>
                                                 </div>
                                             </div>
@@ -165,11 +197,11 @@ export default function Board() {
                                             <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                                             <div className="mt-6 space-y-6">
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="sttemntFnctY" name="sttemntFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" checked={board.sttemntFnctYn === 'Y'} onChange={hanleChange}/>
+                                                    <input id="sttemntFnctY" name="sttemntFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('sttemntFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="sttemntFnctY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
                                                 </div>
                                                 <div className="flex items-center gap-x-3">
-                                                    <input id="sttemntFnctN" name="sttemntFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" checked={board.sttemntFnctYn === 'N' || board.sttemntFnctYn === null} onChange={hanleChange}/>
+                                                    <input id="sttemntFnctN" name="sttemntFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" {...register('sttemntFnctYn')} onChange={hanleChange}/>
                                                     <label htmlFor="sttemntFnctN" className="block text-sm font-medium leading-6 text-gray-900">미사용</label>
                                                 </div>
                                             </div>
