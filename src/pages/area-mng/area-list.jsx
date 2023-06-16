@@ -1,21 +1,19 @@
-import { map, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
-import Layout from "@/components/layout";
+import AreaListItem from "@/components/area-mng-comp/area-list-item";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import BbsList from '@/components/bbs/bbs-list';
-import { ajax } from 'rxjs/ajax'
-import { useRouter } from 'next/router';
+import { catchError, map, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
 
-export default function BoardList() {
+export default function AreaList() {
     const router = useRouter();
 
-    const [boardList, setBoardList] = useState([]);
+    const [areaList, setAreaList] = useState([]);
 
     useEffect(() => {
-        const subscription = ajax.getJSON('/api/bbs/list').pipe(
+        const subscription = ajax.getJSON('/api/bbs/listArea').pipe(
             map((data) => {
-                setBoardList(data);
+                setAreaList(data);
             }),
             catchError((error) => {
                 console.log('Error', error);
@@ -32,7 +30,7 @@ export default function BoardList() {
     const handleReqBtn = (event) => {
         event.preventDefault();
 
-        router.push('/boards/board');
+        router.push('/area-mng/area-detail');
 
     }
 
@@ -40,14 +38,14 @@ export default function BoardList() {
         <>
             <Head>
                 <title>
-                    게시판 목록
+                    지역 목록
                 </title>
             </Head>
             <div className="px-4 py-12 sm:px-6 lg:px-8 min-h-screen">
                 <div className="mx-auto max-w-4xl">
                     <button type="button" onClick={handleReqBtn} className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">신규</button>
                     <ul role="list" className="divide-y divide-gray-100">
-                        {boardList && <BbsList bbsList={boardList}/>}
+                        {areaList && <AreaListItem areaList={areaList}/>}
                     </ul>
                 </div>
             </div> 

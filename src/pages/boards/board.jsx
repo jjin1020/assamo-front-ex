@@ -106,13 +106,15 @@ export default function Board() {
     const deleteClick = (event) => {
         event.preventDefault();
         deleteData(getValues('bbsSen')).subscribe(() => {
-            router.push('/boards/board-list');
+            // router.push('/boards/board-list');
+            router.push('/admin');
         });
     }
     
     const onMoveList = (event) => {
         event.preventDefault();
-        router.push('/boards/board-list');
+        // router.push('/boards/board-list');
+        router.push('/admin');
     }
 
     return (

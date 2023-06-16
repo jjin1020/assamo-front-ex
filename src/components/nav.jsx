@@ -19,7 +19,7 @@ export default function Nav() {
     }
 
     const handleSetting =() => {
-        router.push('/boards/board-list', undefined, { shallow: true })
+        router.push('/admin', undefined, { shallow: true })
     }
 
     useEffect(() => {
@@ -45,11 +45,31 @@ export default function Nav() {
                 subscription.unsubscribe();
             }
     
+        } else if ('/' === pathname) {
+          const subscription = ajax.getJSON('/api/bbs/listArea').pipe(
+              map((data) => {
+                  const navList = [{name: 'HOME', href: '/', current: false}];
+
+                  for (let item of data) {
+                      navList.push({name: item.areaNae, href: '/area-milk', current: false});
+                  }
+                  setNavigation(navList);
+              }),
+              catchError((error) => {
+                  console.log('Error', error);
+
+                  return of(error);
+              })
+          ).subscribe();
+
+          return () => {
+              subscription.unsubscribe();
+          }
         } else {
-            setNavigation([
-                    { name: '홈', href: '/', current: true },
-                    { name: '지역우유', href: '/area-milk', current: false }
-                ])
+          setNavigation([
+                  { name: 'HOME', href: '/', current: false }
+              ])
+                
         }
 
     }, [pathname])
@@ -98,7 +118,7 @@ export default function Nav() {
                               aria-current={item.current ? 'page' : undefined}
                             >
                               {item.name}
-                            </Link>
+                          </Link>
                         ))}
                       </div>
                     </div>
