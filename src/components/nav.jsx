@@ -4,6 +4,7 @@ import { Bars3Icon, BellIcon, Cog8ToothIcon, XMarkIcon } from '@heroicons/react/
 import { useRouter } from 'next/router';
 import { ajax } from 'rxjs/ajax';
 import { catchError, map } from 'rxjs';
+import Link from 'next/link';
 
 
 
@@ -18,16 +19,15 @@ export default function Nav() {
     }
 
     const handleSetting =() => {
-        router.push('/boards/board-list')
+        router.push('/boards/board-list', undefined, { shallow: true })
     }
 
     useEffect(() => {
-        console.log('11', pathname)
 
         if ('/area-milk' === pathname) {
             const subscription = ajax.getJSON('/api/bbs/list').pipe(
                 map((data) => {
-                    const navList = [];
+                    const navList = [{name: 'HOME', href: '/', current: false}];
 
                     for (let item of data) {
                         navList.push({name: item.bbsNae, href: '/#', current: false});
@@ -88,17 +88,17 @@ export default function Nav() {
                     <div className="hidden sm:ml-6 sm:block">
                       <div className="flex space-x-4">
                         {navigation.map((item) => (
-                          <a
-                            key={item.name}
-                            href={item.href}
-                            className={classNames(
-                              item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                              'rounded-md px-3 py-2 text-sm font-medium'
-                            )}
-                            aria-current={item.current ? 'page' : undefined}
-                          >
-                            {item.name}
-                          </a>
+                          <Link
+                              key={item.name}
+                              href={item.href}
+                              className={classNames(
+                                item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                'rounded-md px-3 py-2 text-sm font-medium'
+                              )}
+                              aria-current={item.current ? 'page' : undefined}
+                            >
+                              {item.name}
+                            </Link>
                         ))}
                       </div>
                     </div>
