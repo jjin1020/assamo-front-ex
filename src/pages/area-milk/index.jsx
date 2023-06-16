@@ -1,11 +1,11 @@
-import AreaLayout from "@/components/area-milk-comp/area-layout";
 import AreaSection from "@/components/area-milk-comp/area-section";
+import Layout from "@/components/layout";
 import Head from "next/head";
 
 export default function AreaHome(){
 
     return(
-        <AreaLayout>
+        <Layout>
             <Head>
                 <title>
                     지역우유
@@ -15,6 +15,6 @@ export default function AreaHome(){
             </Head>
             <AreaSection />
         
-        </AreaLayout>
+        </Layout>
     )
 }
