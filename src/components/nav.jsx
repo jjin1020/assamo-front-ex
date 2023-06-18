@@ -25,25 +25,33 @@ export default function Nav() {
     useEffect(() => {
 
         if ('/area-milk' === pathname) {
-            const subscription = ajax.getJSON('/api/bbs/list').pipe(
-                map((data) => {
-                    const navList = [{name: 'HOME', href: '/', current: false}];
 
-                    for (let item of data) {
-                        navList.push({name: item.bbsNae, href: '/#', current: false});
-                    }
-                    setNavigation(navList);
-                }),
-                catchError((error) => {
-                    console.log('Error', error);
-    
-                    return of(error);
-                })
-            ).subscribe();
-    
-            return () => {
-                subscription.unsubscribe();
-            }
+          const { areaSen } = router.query;
+          
+          const subscription = ajax.getJSON('/api/bbs/list').pipe(
+            map((data) => {
+              const navList = [{name: 'HOME', href: '/', current: false}];
+              
+              for (let item of data) {
+                  console.log('data.bbsTyCd', item.bbsTyCd);
+                  if ('A01001' === item.bbsTyCd) {
+                    navList.push({name: item.bbsNae, href: `/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
+                  } else {
+                    navList.push({name: item.bbsNae, href: '/#', current: false});
+                  }
+              }
+              setNavigation(navList);
+            }),
+            catchError((error) => {
+                console.log('Error', error);
+
+                return of(error);
+            })
+          ).subscribe();
+  
+          return () => {
+              subscription.unsubscribe();
+          }
     
         } else if ('/' === pathname) {
           const subscription = ajax.getJSON('/api/bbs/listArea').pipe(

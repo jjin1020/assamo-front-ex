@@ -29,8 +29,6 @@ export default function AreaSection() {
       
     const {areaSen} = router.query;
 
-    console.log(areaSen)
-
     const [areaInfo, setAreaInfo] = useState({});
 
     // 지역정보 조회
