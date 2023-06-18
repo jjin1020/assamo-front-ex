@@ -3,7 +3,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, Cog8ToothIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/router';
 import { ajax } from 'rxjs/ajax';
-import { catchError, map } from 'rxjs';
+import { catchError, map, of } from 'rxjs';
 import Link from 'next/link';
 
 
