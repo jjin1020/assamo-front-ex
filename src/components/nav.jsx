@@ -48,10 +48,10 @@ export default function Nav() {
         } else if ('/' === pathname) {
           const subscription = ajax.getJSON('/api/bbs/listArea').pipe(
               map((data) => {
-                  const navList = [{name: 'HOME', href: '/', current: false}];
+                  const navList = [{name: 'HOME', href: '/', current: true}];
 
                   for (let item of data) {
-                      navList.push({name: item.areaNae, href: '/area-milk', current: false});
+                      navList.push({name: item.areaNae, href: `/area-milk?areaSen=${item.areaSen}`, current: false});
                   }
                   setNavigation(navList);
               }),
@@ -116,6 +116,7 @@ export default function Nav() {
                                 'rounded-md px-3 py-2 text-sm font-medium'
                               )}
                               aria-current={item.current ? 'page' : undefined}
+                              
                             >
                               {item.name}
                           </Link>

@@ -1,3 +1,8 @@
+import { useRouter } from "next/router";
+import { useEffect, useReducer, useState } from "react"
+import { catchError, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
+
 export default function AreaSection() {
     const posts = [
         {
@@ -20,13 +25,47 @@ export default function AreaSection() {
         // More posts...
       ]
 
+    const router = useRouter();
+      
+    const {areaSen} = router.query;
+
+    console.log(areaSen)
+
+    const [areaInfo, setAreaInfo] = useState({});
+
+    // 지역정보 조회
+    const fetchData = (areaSen) => {
+        return ajax.getJSON(`/api/bbs/getArea/${areaSen}`).pipe(
+            catchError(error => {
+                console.error('Error occurred while fetching data', error);
+                return of(null);
+            })
+        );
+    };
+
+    useEffect(() => {
+        if (areaSen != undefined && areaSen != null) {
+
+            const sub = fetchData(areaSen).subscribe(data => {
+                setAreaInfo(data)
+            });
+    
+            return () => {
+                sub.unsubscribe();
+            }
+        }
+
+    }, [])
+
+
+
     return (
         <div className="bg-white py-24 sm:py-32 ">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl lg:mx-0">
-                <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">지역우유</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{areaInfo.areaNae}</h2>
                 <p className="mt-2 text-lg leading-8 text-gray-600">
-                    지역우유에 오신걸 환영합니다.
+                {areaInfo.areaNae}에 오신걸 환영합니다.
                 </p>
             </div>
             <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 border-t border-gray-200 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
