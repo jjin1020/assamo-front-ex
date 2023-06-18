@@ -33,11 +33,17 @@ export default function Nav() {
               const navList = [{name: 'HOME', href: '/', current: false}];
               
               for (let item of data) {
-                  console.log('data.bbsTyCd', item.bbsTyCd);
                   if ('A01001' === item.bbsTyCd) {
                     navList.push({name: item.bbsNae, href: `/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
-                  } else {
-                    navList.push({name: item.bbsNae, href: '/#', current: false});
+
+                  } else if ('A01002' === item.bbsTyCd) {
+                    navList.push({name: item.bbsNae, href: `/bbs/memo-bbs/memo-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
+
+                  } else if ('A01003' === item.bbsTyCd) {
+                    navList.push({name: item.bbsNae, href: `/bbs/gallary-bbs/gallary-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
+
+                  } else if ('A01004' === item.bbsTyCd) {
+                    navList.push({name: item.bbsNae, href: `/bbs/card-bbs/card-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
                   }
               }
               setNavigation(navList);
