@@ -1,4 +1,5 @@
 import Layout from "@/components/layout";
+import { BookmarkIcon, ChatBubbleOvalLeftIcon, EyeIcon, HandThumbUpIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -15,14 +16,7 @@ export default function GnrBbsList() {
     
     
     const products = [
-        { id: 1, title: 'Product 1', description: 'This is product 1', price: '$99.99' },
-        { id: 2, title: 'Product 2', description: 'This is product 2', price: '$89.99' },
-        { id: 3, title: 'Product 3', description: 'This is product 3', price: '$79.99' },
-        { id: 5, title: 'Product 3', description: 'This is product 3', price: '$79.99' },
-        { id: 6, title: 'Product 3', description: 'This is product 3', price: '$79.99' },
-        { id: 7, title: 'Product 3', description: 'This is product 3', price: '$79.99' },
-        { id: 8, title: 'Product 3', description: 'This is product 3', price: '$79.99' },
-        { id: 9, title: 'Product 3', description: 'This is product 3', price: '$79.99' }
+        { id: 1, title: 'Product 1', description: 'This is product 1', price: '$99.99' }
         // add more products here
     ];
     return (
@@ -32,7 +26,7 @@ export default function GnrBbsList() {
                     대전우유 자유게시판
                 </title>
             </Head>
-            <div className="p-6 mx-48 my-10 max-w-full mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md flex items-center space-x-4 grid grid-cols-2 gap-4">
+            <div className="p-6 mx-48 my-10 max-w-full bg-white dark:bg-gray-800 rounded-xl shadow-md flex items-center space-x-4 grid grid-cols-2 gap-4">
                 {products.map((product) => (
                     <div key={product.id} className="card rounded overflow-hidden shadow-lg m-2 flex-1 transform transition duration-500 ease-in-out hover:scale-105">
                         <img className="w-full" src="/path/to/image.jpg" alt="Product image" />
@@ -42,9 +36,21 @@ export default function GnrBbsList() {
                             {product.description}
                             </p>
                         </div>
-                        <div className="px-6 pt-4 pb-2">
-                            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#{product.price}</span>
+                        <div className="px-6 pt-4 pb-2 flex justify-between items-center">
+                            <div className="flex items-center">
+                                <EyeIcon className="h-4 w-4 mr-1"/>
+                                <p className="text-sm mr-4">10K</p>
+                                <HandThumbUpIcon className="h-4 w-4 mr-1" />
+                                <p className="text-sm mr-4">100</p>
+                                <ChatBubbleOvalLeftIcon className="h-4 w-4 mr-1" />
+                                <p className="text-sm mr-4">10</p>
+                            </div>
+                            <div className="flex items-center">
+                                <p className="text-sm">방금전</p>
+                                <BookmarkIcon className="h-4 w-4 ml-1" />
+                            </div>
                         </div>
+
                     </div>
                 ))}
             </div>
