@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { ajax } from 'rxjs/ajax';
 import { catchError, map, of } from 'rxjs';
 import Link from 'next/link';
+import DarkModeToggleButton from './dark-mode-toggle-button';
 
 
 
@@ -23,27 +24,26 @@ export default function Nav() {
     }
 
     useEffect(() => {
-
-        if ('/area-milk' === pathname) {
+        if ('/area-milk' === pathname || pathname.startsWith('/bbs')) {
 
           const { areaSen } = router.query;
           
           const subscription = ajax.getJSON('/api/bbs/list').pipe(
             map((data) => {
-              const navList = [{name: 'HOME', href: '/', current: false}];
+              const navList = [{name: 'HOME', href: `/area-milk?areaSen=${areaSen}`, current: '/area-milk' === pathname}];
               
               for (let item of data) {
                   if ('A01001' === item.bbsTyCd) {
-                    navList.push({name: item.bbsNae, href: `/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
+                    navList.push({name: item.bbsNae, href: `/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: pathname.startsWith('/bbs/gnr-bbs')});
 
                   } else if ('A01002' === item.bbsTyCd) {
-                    navList.push({name: item.bbsNae, href: `/bbs/memo-bbs/memo-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
+                    navList.push({name: item.bbsNae, href: `/bbs/memo-bbs/memo-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: pathname.startsWith('/bbs/memo-bbs')});
 
                   } else if ('A01003' === item.bbsTyCd) {
-                    navList.push({name: item.bbsNae, href: `/bbs/gallary-bbs/gallary-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
+                    navList.push({name: item.bbsNae, href: `/bbs/gallary-bbs/gallary-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: pathname.startsWith('/bbs/gallary-bbs')});
 
                   } else if ('A01004' === item.bbsTyCd) {
-                    navList.push({name: item.bbsNae, href: `/bbs/card-bbs/card-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: false});
+                    navList.push({name: item.bbsNae, href: `/bbs/card-bbs/card-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: pathname.startsWith('/bbs/card-bbs')});
                   }
               }
               setNavigation(navList);
@@ -108,16 +108,18 @@ export default function Nav() {
                   </div>
                   <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                     <div className="flex flex-shrink-0 items-center">
-                      <img
-                        className="block h-8 w-auto lg:hidden"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
-                      />
-                      <img
-                        className="hidden h-8 w-auto lg:block"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
-                      />
+                      <Link href="/">
+                        <img
+                          className="block h-8 w-auto lg:hidden"
+                          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                          alt="Your Company"
+                          />
+                        <img
+                          className="hidden h-8 w-auto lg:block"
+                          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                          alt="Your Company"
+                          />
+                        </Link>
                     </div>
                     <div className="hidden sm:ml-6 sm:block">
                       <div className="flex space-x-4">
@@ -205,11 +207,13 @@ export default function Nav() {
                     
                     <button
                       type="button"
-                      className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                      className="rounded-full mr-3 bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                     >
                       <span className="sr-only">View notifications</span>
                       <Cog8ToothIcon  className="h-6 w-6" aria-hidden="true" onClick={handleSetting}/>
                     </button>
+
+                    <DarkModeToggleButton />
                   </div>
                 </div>
               </div>

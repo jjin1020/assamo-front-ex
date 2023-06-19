@@ -1,9 +1,4 @@
-import { useRouter } from "next/router";
-import { useEffect, useReducer, useState } from "react"
-import { catchError, of } from "rxjs";
-import { ajax } from "rxjs/ajax";
-
-export default function AreaSection() {
+export default function AreaSection({areaInfo}) {
     const posts = [
         {
           id: 1,
@@ -24,36 +19,6 @@ export default function AreaSection() {
         },
         // More posts...
       ]
-
-    const router = useRouter();
-      
-    const {areaSen} = router.query;
-
-    const [areaInfo, setAreaInfo] = useState({});
-
-    // 지역정보 조회
-    const fetchData = (areaSen) => {
-        return ajax.getJSON(`/api/bbs/getArea/${areaSen}`).pipe(
-            catchError(error => {
-                console.error('Error occurred while fetching data', error);
-                return of(null);
-            })
-        );
-    };
-
-    useEffect(() => {
-        if (areaSen != undefined && areaSen != null) {
-
-            const sub = fetchData(areaSen).subscribe(data => {
-                setAreaInfo(data)
-            });
-    
-            return () => {
-                sub.unsubscribe();
-            }
-        }
-
-    }, [])
 
 
 
