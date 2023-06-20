@@ -26,7 +26,7 @@ export default function Nav() {
     useEffect(() => {
         if ('/area-milk' === pathname || pathname.startsWith('/bbs')) {
 
-          const { areaSen } = router.query;
+          const { areaSen, bbsSen } = router.query;
           
           const subscription = ajax.getJSON('/api/bbs/list').pipe(
             map((data) => {
@@ -34,16 +34,16 @@ export default function Nav() {
               
               for (let item of data) {
                   if ('A01001' === item.bbsTyCd) {
-                    navList.push({name: item.bbsNae, href: `/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: pathname.startsWith('/bbs/gnr-bbs')});
+                    navList.push({name: item.bbsNae, href: `/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: item.bbsSen == bbsSen});
 
                   } else if ('A01002' === item.bbsTyCd) {
-                    navList.push({name: item.bbsNae, href: `/bbs/memo-bbs/memo-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: pathname.startsWith('/bbs/memo-bbs')});
+                    navList.push({name: item.bbsNae, href: `/bbs/memo-bbs/memo-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: item.bbsSen == bbsSen});
 
                   } else if ('A01003' === item.bbsTyCd) {
-                    navList.push({name: item.bbsNae, href: `/bbs/gallary-bbs/gallary-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: pathname.startsWith('/bbs/gallary-bbs')});
+                    navList.push({name: item.bbsNae, href: `/bbs/gallary-bbs/gallary-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: item.bbsSen == bbsSen});
 
                   } else if ('A01004' === item.bbsTyCd) {
-                    navList.push({name: item.bbsNae, href: `/bbs/card-bbs/card-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: pathname.startsWith('/bbs/card-bbs')});
+                    navList.push({name: item.bbsNae, href: `/bbs/card-bbs/card-bbs-list?areaSen=${areaSen}&bbsSen=${item.bbsSen}`, current: item.bbsSen == bbsSen});
                   }
               }
               setNavigation(navList);
