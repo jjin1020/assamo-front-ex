@@ -22,11 +22,11 @@ export default function Nav() {
     const handleSetting =() => {
         router.push('/admin', undefined, { shallow: true })
     }
+    const { areaSen, bbsSen } = router.query;
 
     useEffect(() => {
         if ('/area-milk' === pathname || pathname.startsWith('/bbs')) {
 
-          const { areaSen, bbsSen } = router.query;
           
           const subscription = ajax.getJSON('/api/bbs/list').pipe(
             map((data) => {
@@ -86,7 +86,7 @@ export default function Nav() {
                 
         }
 
-    }, [pathname])
+    }, [pathname, areaSen, bbsSen])
 
 
     return (

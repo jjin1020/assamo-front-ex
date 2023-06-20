@@ -32,7 +32,7 @@ export default function BoardList() {
     const handleReqBtn = (event) => {
         event.preventDefault();
 
-        router.push('/boards/board');
+        router.push('/boards/board', undefined, { shallow: true });
 
     }
 
