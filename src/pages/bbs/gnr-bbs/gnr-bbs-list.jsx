@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import { Menu, Transition } from "@headlessui/react";
+import { Menu, Switch, Transition } from "@headlessui/react";
 import { BookmarkIcon, BriefcaseIcon, CalendarIcon, ChatBubbleOvalLeftIcon, CheckIcon, ChevronDownIcon, CurrencyDollarIcon, EyeIcon, HandThumbUpIcon, LinkIcon, MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -15,6 +15,8 @@ export default function GnrBbsList() {
     const router = useRouter();
 
     const { areaSen, bbsSen } = router.query;
+    
+    const [enabled, setEnabled] = useState(false)
 
     
     // 지역정보 조회
@@ -123,6 +125,24 @@ export default function GnrBbsList() {
                     </div>
                 </div>
                 <div className="mt-5 flex lg:ml-4 lg:mt-0">
+
+                    <span className="flex mr-3 pt-2">
+                        <p className="mr-1">새글구독</p>
+                        <Switch
+                        checked={enabled}
+                        onChange={setEnabled}
+                        className={`${
+                            enabled ? 'bg-blue-600' : 'bg-gray-200'
+                        } relative inline-flex h-6 w-11 items-center rounded-full`}
+                        >
+                        <span className="sr-only">Enable subscribe</span>
+                        <span
+                            className={`${
+                            enabled ? 'translate-x-6' : 'translate-x-1'
+                            } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                        />
+                        </Switch>
+                    </span>
                     <span className="hidden sm:block">
                         <button
                             type="button" onClick={handleReqBtn}
@@ -130,26 +150,6 @@ export default function GnrBbsList() {
                         >
                             <PencilIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                             글쓰기
-                        </button>
-                    </span>
-
-                    <span className="ml-3 hidden sm:block">
-                        <button
-                            type="button"
-                            className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                        >
-                            <LinkIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                            View
-                        </button>
-                    </span>
-
-                    <span className="sm:ml-3">
-                        <button
-                            type="button"
-                            className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                            <CheckIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
-                            Publish
                         </button>
                     </span>
 
