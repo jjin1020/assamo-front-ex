@@ -36,7 +36,7 @@ export default function AreaHome(){
             }
         }
 
-    }, [])
+    }, [areaSen])
 
     return(
         <Layout>
