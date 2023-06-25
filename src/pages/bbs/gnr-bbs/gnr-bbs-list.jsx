@@ -195,7 +195,7 @@ export default function GnrBbsList() {
                     </Menu>
                 </div>
             </div>
-            <div className="p-6 mx-48 my-10 max-w-full bg-white dark:bg-gray-800 rounded-xl shadow-md items-center space-x-4 grid grid-cols-2 gap-4">
+            <div className="p-6 mx-48 my-10 max-w-full bg-white dark:bg-gray-800 rounded-xl shadow-md items-center space-x-4 grid grid-cols-3 gap-4">
                 {nttList.map((ntt) => (
                     <div key={ntt.nttSen} className="card rounded overflow-hidden shadow-lg m-2 flex-1 transform transition duration-500 ease-in-out hover:scale-105">
                         <img className="w-full" src="/path/to/image.jpg" alt="Product image" />
@@ -208,11 +208,11 @@ export default function GnrBbsList() {
                         <div className="px-6 pt-4 pb-2 flex justify-between items-center">
                             <div className="flex items-center">
                                 <EyeIcon className="h-4 w-4 mr-1"/>
-                                <p className="text-sm mr-4">10K</p>
+                                <p className="text-sm mr-4">{ntt.serchNum}</p>
                                 <HandThumbUpIcon className="h-4 w-4 mr-1" />
-                                <p className="text-sm mr-4">100</p>
+                                <p className="text-sm mr-4">{ntt.niceNum}</p>
                                 <ChatBubbleOvalLeftIcon className="h-4 w-4 mr-1" />
-                                <p className="text-sm mr-4">10</p>
+                                <p className="text-sm mr-4">{ntt.anserNum}</p>
                             </div>
                             <div className="flex items-center">
                                 <p className="text-sm">방금전</p>
