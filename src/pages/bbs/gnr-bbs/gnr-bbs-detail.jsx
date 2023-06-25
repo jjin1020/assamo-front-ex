@@ -3,7 +3,7 @@ import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // import the styles
 import { catchError, of } from "rxjs";
@@ -14,7 +14,7 @@ export default function GnrBbsDetail() {
     
     const { areaSen, bbsSen, nttSen } = router.query;
 
-    const { register, handleSubmit, formState: { errors }, setValue, getValues } = useForm()
+    const { register, control, handleSubmit, formState: { errors }, setValue, getValues } = useForm()
 
      const onSubmit = (data) => {
       // handle form submission logic here
@@ -69,6 +69,16 @@ export default function GnrBbsDetail() {
         );
     };
 
+    // 게시판 상세조회
+    const fetchData = (areaSen, bbsSen, nttSen) => {
+        return ajax.getJSON(`/api/bbs/ntt/getNtt?areaSen=${areaSen}&bbsSen=${bbsSen}&nttSen=${nttSen}`, ).pipe(
+            catchError(error => {
+                console.error('Error occurred while fetching data', error);
+                return of(null);
+            })
+        );
+    };
+
     useEffect(() => {
         if (areaSen != undefined && areaSen != null) {
 
@@ -81,12 +91,24 @@ export default function GnrBbsDetail() {
             getBbsInfo(bbsSen).subscribe(data => {
                 setBbsInfo(data);
             })
+        } 
+        
+        if (nttSen != undefined && nttSen != null) {
+            fetchData(areaSen, bbsSen, nttSen)
+                .subscribe((data) => {
+                    for (let field in data) {
+                        setValue(field, data[field]);
+                      }
+                })
+
+        } else {
+
+            setValue('areaSen',areaSen);
+            setValue('bbsSen',bbsSen);
+            setValue('ncnmNae','jjin');
+            setValue('writerNam','정진룡');
+            setValue('inpId','8811');
         }
-        setValue('areaSen',areaSen);
-        setValue('bbsSen',bbsSen);
-        setValue('ncnmNae','jjin');
-        setValue('writerNam','정진룡');
-        setValue('inpId','8811');
 
     }, [areaSen, bbsSen, nttSen])
 
@@ -124,11 +146,19 @@ export default function GnrBbsDetail() {
                                         내용
                                     </label>
                                     <div className="mt-1">
-                                        <ReactQuill 
-                                        id="nttContents"
-                                        name="nttContents"
-                                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-80"
-                                        onChange={hanleQuillChange}
+                                        <Controller 
+                                            name="nttContents"
+                                            control={control}  // useForm에서 반환되는 control 사용
+                                            defaultValue=""  // 초기 값 설정
+                                            render={({ field }) => (
+                                        
+                                                <ReactQuill 
+                                                id="nttContents"
+                                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-80"
+                                                {...field}
+                                                onChange={hanleQuillChange}
+                                                />
+                                            )}
                                         />
                                     </div>
                                 </div>

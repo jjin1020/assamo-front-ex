@@ -1,20 +1,19 @@
 import Layout from "@/components/layout";
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // import the styles
 import { catchError, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 
-export default function GnrBbsDetail() {
+export default function GnrBbsView() {
     const router = useRouter();
     
     const { areaSen, bbsSen, nttSen } = router.query;
 
-    const { register, handleSubmit, formState: { errors }, setValue, getValues } = useForm()
+    const { register, control, handleSubmit, formState: { errors }, setValue, getValues } = useForm()
 
      const onSubmit = (data) => {
       // handle form submission logic here
@@ -95,7 +94,7 @@ export default function GnrBbsDetail() {
 
         if (nttSen != undefined && nttSen != null) {
             fetchData(areaSen, bbsSen, nttSen)
-                subscribe((data) => {
+                .subscribe((data) => {
                     for (let field in data) {
                         setValue(field, data[field]);
                       }
@@ -112,6 +111,18 @@ export default function GnrBbsDetail() {
 
 
     }, [areaSen, bbsSen, nttSen])
+    
+    const onMoveList = (event) => {
+        event.preventDefault();
+        // router.push('/boards/board-list');
+        router.push(`/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${bbsSen}`, undefined, { shallow: true });
+    }
+    
+    const onMoveDetail = (event) => {
+        event.preventDefault();
+        // router.push('/boards/board-list');
+        router.push(`/bbs/gnr-bbs/gnr-bbs-detail?areaSen=${areaSen}&bbsSen=${bbsSen}&nttSen=${nttSen}`, undefined, { shallow: true });
+    }
 
     return (
         <Layout>
@@ -138,6 +149,7 @@ export default function GnrBbsDetail() {
                                         autoComplete="nttSubject"
                                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                                         {...register('nttSubject')} onChange={hanleChange}
+                                        readOnly={true}
                                         />
                                     </div>
                                 </div>
@@ -147,11 +159,20 @@ export default function GnrBbsDetail() {
                                         내용
                                     </label>
                                     <div className="mt-1">
-                                        <ReactQuill 
-                                        id="nttContents"
-                                        name="nttContents"
-                                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-80"
-                                        onChange={hanleQuillChange}
+                                        <Controller 
+                                            name="nttContents"
+                                            control={control}  // useForm에서 반환되는 control 사용
+                                            defaultValue=""  // 초기 값 설정
+                                            render={({ field }) => (
+                                        
+                                                <ReactQuill 
+                                                id="nttContents"
+                                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-80"
+                                                {...field}
+                                                readOnly={true}
+                                                modules={{ toolbar: false }}
+                                                />
+                                            )}
                                         />
                                     </div>
                                 </div>
@@ -196,14 +217,19 @@ export default function GnrBbsDetail() {
                     </div>
 
                     <div className="mt-6 flex items-center justify-end gap-x-6">
-                        <button type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                            Cancel
+                        <button 
+                            type="button" 
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                            onClick={onMoveList}
+                            >
+                            목록
                         </button>
                         <button
-                        type="submit"
+                        type="button"
                         className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                        onClick={onMoveDetail}
                         >
-                            Save
+                            수정
                         </button>
                     </div>
                 </form>

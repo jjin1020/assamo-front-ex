@@ -107,14 +107,14 @@ export default function Board() {
         event.preventDefault();
         deleteData(getValues('bbsSen')).subscribe(() => {
             // router.push('/boards/board-list');
-            router.push('/admin');
+            router.push('/admin', undefined, { shallow: true });
         });
     }
     
     const onMoveList = (event) => {
         event.preventDefault();
         // router.push('/boards/board-list');
-        router.push('/admin');
+        router.push('/admin', undefined, { shallow: true });
     }
 
     return (
