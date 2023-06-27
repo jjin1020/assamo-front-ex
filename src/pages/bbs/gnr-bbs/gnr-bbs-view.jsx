@@ -7,6 +7,7 @@ import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // import the styles
 import { catchError, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
+import TextareaAutosize from 'react-textarea-autosize';
 
 export default function GnrBbsView() {
     const router = useRouter();
@@ -167,7 +168,7 @@ export default function GnrBbsView() {
                                         
                                                 <ReactQuill 
                                                 id="nttContents"
-                                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-80"
+                                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md h-80"
                                                 {...field}
                                                 readOnly={true}
                                                 modules={{ toolbar: false }}
@@ -176,42 +177,19 @@ export default function GnrBbsView() {
                                         />
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                                <div className="col-span-full">
+                                    <label htmlFor="nttContents" className="block text-gray-900">
+                                        댓글
+                                    </label>
+                                    <TextareaAutosize 
+                                        id="anserContents" 
+                                        name="anserContents" 
+                                        className="block w-full rounded-md border-0 p-1.5 placeholder:text-gray-400 focus:placeholder:text-gray-200 focus-visible:outline-0 resize-none"
+                                        placeholder="댓글을 입력해 주세요"
+                                        {...register('anserContents')} onChange={hanleChange}
+                                    ></TextareaAutosize>
+                                </div>
 
-                        <div className="border-b border-gray-900/10 pb-12">
-                            <h2 className="text-base font-semibold leading-7 text-gray-900">게시판 옵션 설정</h2>
-                            <p className="mt-1 text-sm leading-6 text-gray-600">We'll always let you know about important changes, but you pick what else you want to hear about.</p>
-
-                            <div className="mt-10 space-y-10">
-                                <fieldset>
-                                    <legend className="text-sm font-semibold leading-6 text-gray-900">비밀글 여부</legend>
-                                    <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
-                                    <div className="mt-6 space-y-6">
-                                        <div className="flex items-center gap-x-3">
-                                            <input id="scrtartcFnctY" name="scrtartcFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('scrtartcFnctYn')} onChange={hanleChange} disabled={bbsInfo.scrtartcFnctYn === 'Y' ? false : true}/>
-                                            <label htmlFor="scrtartcFnctY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
-                                        </div>
-                                        <div className="flex items-center gap-x-3">
-                                            <input id="scrtartcFnctN" name="scrtartcFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" {...register('scrtartcFnctYn')} onChange={hanleChange} disabled={bbsInfo.scrtartcFnctYn === 'Y' ? false : true}/>
-                                            <label htmlFor="scrtartcFnctN" className="block text-sm font-medium leading-6 text-gray-900">미사용</label>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                                <fieldset>
-                                    <legend className="text-sm font-semibold leading-6 text-gray-900">익명 여부</legend>
-                                    <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
-                                    <div className="mt-6 space-y-6">
-                                        <div className="flex items-center gap-x-3">
-                                            <input id="annymtyFnctY" name="annymtyFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="Y" {...register('annymtyFnctYn')} onChange={hanleChange} disabled={bbsInfo.annymtyFnctYn === 'Y' ? false : true}/>
-                                            <label htmlFor="annymtyFnctY" className="block text-sm font-medium leading-6 text-gray-900">사용</label>
-                                        </div>
-                                        <div className="flex items-center gap-x-3">
-                                            <input id="annymtyFnctN" name="annymtyFnctYn" type="radio" className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" value="N" {...register('annymtyFnctYn')} onChange={hanleChange} disabled={bbsInfo.annymtyFnctYn === 'Y' ? false : true}/>
-                                            <label htmlFor="annymtyFnctN" className="block text-sm font-medium leading-6 text-gray-900">미사용</label>
-                                        </div>
-                                    </div>
-                                </fieldset>
                             </div>
                         </div>
                     </div>
