@@ -2,6 +2,8 @@ import Layout from "@/components/layout";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import Quill from "quill";
+import BlotFormatter from "quill-blot-formatter";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
@@ -9,7 +11,17 @@ import 'react-quill/dist/quill.snow.css'; // import the styles
 import { catchError, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 
+
+const fontSizeArr = ['12px', '13px', '15px', '16px', '19px', '24px','28px', '30px','34px', '38px'];
+
+var Size = Quill.import('attributors/style/size');
+Size.whitelist = fontSizeArr;
+
+Quill.register('modules/blotFormatter', BlotFormatter);
+Quill.register(Size, true);
+
 export default function GnrBbsDetail() {
+      
     const router = useRouter();
     
     const { areaSen, bbsSen, nttSen } = router.query;
@@ -157,6 +169,28 @@ export default function GnrBbsDetail() {
                                                 className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-80"
                                                 {...field}
                                                 onChange={hanleQuillChange}
+                                                modules={{
+                                                    blotFormatter: {},
+                                                    toolbar: [
+                                                      ['bold', 'italic', 'underline', 'strike'],
+                                                      ['blockquote', 'code-block'],
+                                                    //   [{ 'header': 1 }, { 'header': 2 }],
+                                                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                      [{ 'indent': '-1'}, { 'indent': '+1' }],
+                                                    //   [{ 'direction': 'rtl' }],
+                                                      [{ 'size': fontSizeArr }],
+                                                    //   [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                                      [{ 'color': [] }, { 'background': [] }],
+                                                    //   [{ 'font': [] }],
+                                                      [{ 'align': [] }],
+                                                    //   ['clean'],
+                                                      ['link', 'image'] // link and image, video
+                                                    ],
+                                                  }}
+                                                  formats={['bold', 'italic', 'underline', 'strike',
+                                                            'blockquote', 'code-block',
+                                                            'list', 'indent',
+                                                            'size', 'color', 'background', 'align', 'link', 'image']}
                                                 />
                                             )}
                                         />

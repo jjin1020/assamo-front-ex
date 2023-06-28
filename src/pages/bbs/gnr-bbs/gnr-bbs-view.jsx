@@ -177,24 +177,33 @@ export default function GnrBbsView() {
                                         />
                                     </div>
                                 </div>
-                                <div className="col-span-full">
-                                    <label htmlFor="nttContents" className="block text-gray-900">
-                                        댓글
-                                    </label>
-                                    <TextareaAutosize 
-                                        id="anserContents" 
-                                        name="anserContents" 
-                                        className="block w-full rounded-md border-0 p-1.5 placeholder:text-gray-400 focus:placeholder:text-gray-200 focus-visible:outline-0 resize-none"
-                                        placeholder="댓글을 입력해 주세요"
-                                        {...register('anserContents')} onChange={hanleChange}
-                                    ></TextareaAutosize>
-                                </div>
-
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-6 pb-6 border-b col-span-full gap-x-6">
+                        <label htmlFor="nttContents" className="block text-gray-900 mb-3">
+                            댓글
+                        </label>
+                        <div className="p-3 border-0 ring-1 ring-inset ring-gray-300 rounded-lg">
+                            <label className="block text-gray-900">
+                                정진룡
+                            </label>
+                            <TextareaAutosize 
+                                id="anserContents" 
+                                name="anserContents" 
+                                className="block w-full rounded-md border-0 p-1.5 placeholder:text-gray-400 focus:placeholder:text-gray-200 focus-visible:outline-0 resize-none"
+                                placeholder="댓글을 입력해 주세요"
+                                {...register('anserContents')} onChange={hanleChange}
+                            ></TextareaAutosize>
+                            <div className="flex justify-end">
+                                <button className="text-gray-400">
+                                    등록
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="mt-6 flex items-center justify-end gap-x-6">
+                    <div className="mt-6 flex items-center justify-end">
                         <button 
                             type="button" 
                             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
