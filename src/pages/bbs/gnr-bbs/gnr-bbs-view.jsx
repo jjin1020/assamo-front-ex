@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // import the styles
 import { catchError, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
@@ -200,10 +200,12 @@ export default function GnrBbsView() {
                                     
                                             <ReactQuill 
                                             id="nttContents"
-                                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md h-80"
+                                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md"
                                             {...field}
                                             readOnly={true}
-                                            modules={{ toolbar: false }}
+                                            modules={{ 
+                                                toolbar: false 
+                                            }}
                                             />
                                         )}
                                     />
