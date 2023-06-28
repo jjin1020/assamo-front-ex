@@ -29,8 +29,6 @@ export default function GnrBbsDetail() {
 
      const onSubmit = (data) => {
       // handle form submission logic here
-      console.log(data);
-
       saveData(data).subscribe(() => {
           router.push(`/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${bbsSen}`)  // redirect to success page
       })
@@ -167,8 +165,13 @@ export default function GnrBbsDetail() {
                                         
                                                 <ReactQuill 
                                                 id="nttContents"
-                                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-150"
+                                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-80"
                                                 {...field}
+                                                onChange={(content, delta, source, editor) => {
+                                                    console.log(editor.getHTML())
+                                                    field.onChange(editor.getHTML()); // this will store the value into react-hook-form
+                                                    hanleQuillChange(content, delta, source, editor);
+                                                }}
                                                 modules={{
                                                     blotFormatter: {},
                                                     toolbar: [
