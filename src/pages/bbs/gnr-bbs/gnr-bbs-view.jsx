@@ -14,15 +14,42 @@ export default function GnrBbsView() {
     
     const { areaSen, bbsSen, nttSen } = router.query;
 
-    const { register, control, handleSubmit, formState: { errors }, setValue, getValues } = useForm()
+    const { register, control, handleSubmit, formState: { errors }, setValue, getValues } = useForm();
+
+    const [replyTo, setReplyTo] = useState(null);
+                                    
+    const [replyContent, setReplyContent] = useState('');
 
      const onSubmit = (data) => {
       // handle form submission logic here
-      console.log(data);
+
+      for (let field in data) {
+        setValue(field, data[field]);
+      }
 
       saveData(data).subscribe(() => {
-          router.push(`/bbs/gnr-bbs/gnr-bbs-list?areaSen=${areaSen}&bbsSen=${bbsSen}`)  // redirect to success page
+        listAnser(data.nttSen)
+        .subscribe((result) => {
+            setAnserList(result);
+
+            setValue('anserContents', null);
+        });
       })
+    }
+
+    const handleReplySubmit =  (e, anserSen, replyContent) => {
+        e.preventDefault();
+        const saveDataParam = {'parentAnserSen': anserSen, 'anserContents': replyContent, 'nttSen': getValues('nttSen'), 'writerNam': '정진룡', 'inpId': '8811'};
+
+        saveData(saveDataParam).subscribe(() => {
+            listAnser(saveDataParam.nttSen)
+            .subscribe((result) => {
+                setAnserList(result);
+    
+                setReplyTo(null);
+                setReplyContent(null);
+            });
+          })
     }
 
     const hanleChange = (event) => {
@@ -31,13 +58,8 @@ export default function GnrBbsView() {
         setValue(targetName,targetValue);
     }
 
-    const hanleQuillChange = (content, delta, source, editor) => {
-        setValue('nttContents',editor.getHTML());
-        setValue('nttTextContents',editor.getText());
-    }
-    
     const saveData = (data) => {
-        return ajax.post('/api/bbs/ntt/save', data).pipe(
+        return ajax.post('/api/bbs/ntt/saveAnser', data).pipe(
         catchError(error => {
             console.error('Error occurred while saving data', error);
             return of(null);
@@ -62,6 +84,18 @@ export default function GnrBbsView() {
 
     const getBbsInfo = (bbsSen) => {
         return ajax.getJSON(`/api/bbs/getBoard/${bbsSen}`).pipe(
+            catchError(error => {
+                console.error('Error occurred while fetching data', error);
+                return of(null);
+            })
+        );
+    };
+
+    // 댓글 목록 조회
+    const [anserList, setAnserList] = useState([]);
+
+    const listAnser = (nttSen) => {
+        return ajax.getJSON(`/api/bbs/ntt/listAnser?nttSen=${nttSen}`).pipe(
             catchError(error => {
                 console.error('Error occurred while fetching data', error);
                 return of(null);
@@ -99,15 +133,14 @@ export default function GnrBbsView() {
                     for (let field in data) {
                         setValue(field, data[field]);
                       }
+
+                      listAnser(nttSen)
+                        .subscribe((result) => {
+                            setAnserList(result);
+
+                            console.log(result)
+                        });
                 })
-
-        } else {
-
-            setValue('areaSen',areaSen);
-            setValue('bbsSen',bbsSen);
-            setValue('ncnmNae','jjin');
-            setValue('writerNam','정진룡');
-            setValue('inpId','8811');
         }
 
 
@@ -134,60 +167,116 @@ export default function GnrBbsView() {
             </Head>
             
             <div className="p-6 mx-48 my-10 max-w-full min-h-screen">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="space-y-12">
-                        <div className="border-b border-gray-900/10 pb-12">
-                            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                <div className="col-span-full">
-                                    <label htmlFor="nttSubject" className="block text-gray-900">
-                                        제목
-                                    </label>
-                                    <div className="mt-1">
-                                        <input
-                                        type="text"
-                                        name="nttSubject"
-                                        id="nttSubject"
-                                        autoComplete="nttSubject"
-                                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                        {...register('nttSubject')} onChange={hanleChange}
-                                        readOnly={true}
-                                        />
-                                    </div>
+                <div className="space-y-12">
+                    <div className="border-b border-gray-900/10 pb-12">
+                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                            <div className="col-span-full">
+                                <label htmlFor="nttSubject" className="block text-gray-900">
+                                    제목
+                                </label>
+                                <div className="mt-1">
+                                    <input
+                                    type="text"
+                                    name="nttSubject"
+                                    id="nttSubject"
+                                    autoComplete="nttSubject"
+                                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    {...register('nttSubject')} onChange={hanleChange}
+                                    readOnly={true}
+                                    />
                                 </div>
+                            </div>
 
-                                <div className="col-span-full sm:col-span-6">
-                                    <label htmlFor="nttContents" className="block text-gray-900">
-                                        내용
-                                    </label>
-                                    <div className="mt-1">
-                                        <Controller 
-                                            name="nttContents"
-                                            control={control}  // useForm에서 반환되는 control 사용
-                                            defaultValue=""  // 초기 값 설정
-                                            render={({ field }) => (
-                                        
-                                                <ReactQuill 
-                                                id="nttContents"
-                                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md h-80"
-                                                {...field}
-                                                readOnly={true}
-                                                modules={{ toolbar: false }}
-                                                />
-                                            )}
-                                        />
-                                    </div>
+                            <div className="col-span-full sm:col-span-6">
+                                <label htmlFor="nttContents" className="block text-gray-900">
+                                    내용
+                                </label>
+                                <div className="mt-1">
+                                    <Controller 
+                                        name="nttContents"
+                                        control={control}  // useForm에서 반환되는 control 사용
+                                        defaultValue=""  // 초기 값 설정
+                                        render={({ field }) => (
+                                    
+                                            <ReactQuill 
+                                            id="nttContents"
+                                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md h-80"
+                                            {...field}
+                                            readOnly={true}
+                                            modules={{ toolbar: false }}
+                                            />
+                                        )}
+                                    />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="mt-6 pb-6 border-b col-span-full gap-x-6">
-                        <label htmlFor="nttContents" className="block text-gray-900 mb-3">
-                            댓글
-                        </label>
-                        <div className="p-3 border-0 ring-1 ring-inset ring-gray-300 rounded-lg">
+                </div>
+                <div className="mt-6 pb-6 col-span-full gap-x-6 border-b">
+                    <label htmlFor="nttContents" className="block text-gray-900 mb-3">
+                        댓글
+                    </label>
+                    <div>
+                        {anserList && anserList.map((data) => (
+                            <>
+                                <div key={data.anserSen} className="p-3 m-3 border-t last:border-b" style={{paddingLeft: 3 + (data.lv * 15) + 'px'}}>
+                                    <label className="block text-gray-900">
+                                        {data.writerNam}
+                                    </label>
+                                    <TextareaAutosize 
+                                        id="anserContents" 
+                                        name="anserContents" 
+                                        className="block w-full rounded-md border-0 p-1.5 placeholder:text-gray-400 focus:placeholder:text-gray-200 focus-visible:outline-0 resize-none"
+                                        placeholder="댓글을 입력해 주세요"
+                                        value={data.anserContents}
+                                        readOnly
+                                    ></TextareaAutosize>
+                                    <div className="flex justify-start">
+                                        <input type="text" value={data.inpDt} className="text-gray-400" readOnly/>
+                                        <button type="button" className="text-gray-400" onClick={() => setReplyTo(data.anserSen)}>
+                                            답글쓰기
+                                        </button>
+                                    </div>
+                                </div>
+                                {replyTo === data.anserSen && (
+
+                                    <div className="p-3 m-3 border-t">
+                                        <div className="p-3 border-0 ring-1 ring-inset ring-gray-300 rounded-lg">
+                                            <form onSubmit={(e) => handleReplySubmit(e, data.anserSen, replyContent)}>
+                                                <label className="block text-gray-900">
+                                                    정진룡
+                                                </label>
+                                                <TextareaAutosize 
+                                                    id="anserContents" 
+                                                    name="anserContents" 
+                                                    className="block w-full rounded-md border-0 p-1.5 placeholder:text-gray-400 focus:placeholder:text-gray-200 focus-visible:outline-0 resize-none"
+                                                    placeholder="댓글을 입력해 주세요"
+                                                    value={replyContent}
+                                                    onChange={e => setReplyContent(e.target.value)}
+                                                ></TextareaAutosize>
+                                                <div className="flex justify-end">
+                                                    <button type="button" className="text-gray-400 mr-3" onClick={() => setReplyTo(null)}>
+                                                        취소
+                                                    </button>
+                                                    <button type="submit" className="text-gray-400">
+                                                        등록
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        ))}
+                    
+                    </div>
+                    <div className="p-3 border-0 ring-1 ring-inset ring-gray-300 rounded-lg">
+                        <form onSubmit={handleSubmit(onSubmit)}>
                             <label className="block text-gray-900">
                                 정진룡
                             </label>
+                            <input type="hidden" name="writerNam" value={'정진룡'}/>
+                            <input type="hidden" name="inpId" value={'8811'}/>
                             <TextareaAutosize 
                                 id="anserContents" 
                                 name="anserContents" 
@@ -196,30 +285,30 @@ export default function GnrBbsView() {
                                 {...register('anserContents')} onChange={hanleChange}
                             ></TextareaAutosize>
                             <div className="flex justify-end">
-                                <button className="text-gray-400">
+                                <button type="submit" className="text-gray-400">
                                     등록
                                 </button>
                             </div>
-                        </div>
+                        </form>
                     </div>
+                </div>
 
-                    <div className="mt-6 flex items-center justify-end">
-                        <button 
-                            type="button" 
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                            onClick={onMoveList}
-                            >
-                            목록
-                        </button>
-                        <button
-                        type="button"
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
-                        onClick={onMoveDetail}
+                <div className="mt-6 flex items-center justify-end">
+                    <button 
+                        type="button" 
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        onClick={onMoveList}
                         >
-                            수정
-                        </button>
-                    </div>
-                </form>
+                        목록
+                    </button>
+                    <button
+                    type="button"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                    onClick={onMoveDetail}
+                    >
+                        수정
+                    </button>
+                </div>
             </div>
         </Layout>
     )
