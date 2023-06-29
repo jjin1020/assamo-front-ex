@@ -5,10 +5,13 @@ import { useRouter } from "next/router";
 import BlotFormatter from "quill-blot-formatter";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import ReactQuill, { Quill } from "react-quill";
+import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // import the styles
 import { catchError, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
+
+
+import Quill from 'quill';
 
 
 const fontSizeArr = ['12px', '13px', '15px', '16px', '19px', '24px','28px', '30px','34px', '38px'];
@@ -18,6 +21,45 @@ Size.whitelist = fontSizeArr;
 
 Quill.register('modules/blotFormatter', BlotFormatter);
 Quill.register(Size, true);
+
+let BaseImageFormat = Quill.import('formats/image');
+
+class ImageFormat extends BaseImageFormat  {
+  static formats(domNode) {
+    return {
+      style: domNode.style.cssText,
+      width: domNode.getAttribute('width'),
+      height: domNode.getAttribute('height')
+      // You can add other attributes here as needed
+    };
+  }
+
+  format(name, value) {
+    if (name === 'style') {
+      this.domNode.setAttribute('style', value);
+    } else if (name === 'width') {
+      this.domNode.setAttribute('width', value);
+    } else if (name === 'height') {
+      this.domNode.setAttribute('height', value);
+    } else {
+      super.format(name, value);
+    }
+  }
+
+  formats() {
+    let formats = {
+      style: this.domNode.getAttribute('style'),
+      width: this.domNode.getAttribute('width'),
+      height: this.domNode.getAttribute('height')
+    };
+    return formats;
+  }
+}
+
+ImageFormat.blotName = 'image';
+ImageFormat.tagName = 'img';
+
+Quill.register(ImageFormat, true);
 
 export default function GnrBbsDetail() {
       
@@ -168,10 +210,11 @@ export default function GnrBbsDetail() {
                                                 className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md h-80"
                                                 {...field}
                                                 onChange={(content, delta, source, editor) => {
-                                                    console.log(editor.getHTML())
+                                                    console.log('11111', editor.getHTML())
                                                     field.onChange(editor.getHTML()); // this will store the value into react-hook-form
                                                     hanleQuillChange(content, delta, source, editor);
                                                 }}
+                                                theme="snow"
                                                 modules={{
                                                     blotFormatter: {},
                                                     toolbar: [
@@ -190,6 +233,17 @@ export default function GnrBbsDetail() {
                                                       ['link', 'image'] // link and image, video
                                                     ],
                                                   }}
+                                                  formats={[
+                                                      'bold', 'italic', 'underline', 'strike'
+                                                    , 'blockquote', 'code-block', 'list', 'indent'
+                                                    , 'size', 'color', 'background', 'align'
+                                                    , 'link'
+                                                    , 'image'
+                                                    , 'img'
+                                                    , 'style'
+                                                    , 'width'
+                                                    , 'height'
+                                                  ]}
                                                 />
                                             )}
                                         />

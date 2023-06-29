@@ -1,13 +1,55 @@
 import Layout from "@/components/layout";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import ReactQuill, { Quill } from "react-quill";
+import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // import the styles
 import { catchError, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import TextareaAutosize from 'react-textarea-autosize';
+
+import Quill from 'quill';
+
+let BaseImageFormat = Quill.import('formats/image');
+
+class ImageFormat extends BaseImageFormat  {
+  static formats(domNode) {
+    return {
+      style: domNode.style.cssText,
+      width: domNode.getAttribute('width'),
+      height: domNode.getAttribute('height')
+      // You can add other attributes here as needed
+    };
+  }
+
+  format(name, value) {
+    if (name === 'style') {
+      this.domNode.setAttribute('style', value);
+    } else if (name === 'width') {
+      this.domNode.setAttribute('width', value);
+    } else if (name === 'height') {
+      this.domNode.setAttribute('height', value);
+    } else {
+      super.format(name, value);
+    }
+  }
+
+  formats() {
+    let formats = {
+      style: this.domNode.getAttribute('style'),
+      width: this.domNode.getAttribute('width'),
+      height: this.domNode.getAttribute('height')
+    };
+    return formats;
+  }
+}
+
+ImageFormat.blotName = 'image';
+ImageFormat.tagName = 'img';
+
+Quill.register(ImageFormat, true);
+
 
 export default function GnrBbsView() {
     const router = useRouter();
@@ -131,14 +173,18 @@ export default function GnrBbsView() {
             fetchData(areaSen, bbsSen, nttSen)
                 .subscribe((data) => {
                     for (let field in data) {
-                        setValue(field, data[field]);
+
+                        if (field === 'nttContents') {
+                            setValue(field, data[field].replace('data-align', 'class="ql-align-left"'));
+                            getValues('nttContents')
+                        } else {
+                            setValue(field, data[field]);
+                        }
                       }
 
                       listAnser(nttSen)
                         .subscribe((result) => {
                             setAnserList(result);
-
-                            console.log(result)
                         });
                 })
         }
@@ -201,7 +247,7 @@ export default function GnrBbsView() {
                                             <ReactQuill 
                                             id="nttContents"
                                             className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md"
-                                            {...field}
+                                            value={field.value}
                                             readOnly={true}
                                             modules={{ 
                                                 toolbar: false 
@@ -242,7 +288,7 @@ export default function GnrBbsView() {
                                 </div>
                                 {replyTo === data.anserSen && (
 
-                                    <div className="p-3 m-3 border-t">
+                                    <div key={data.anserSen + '-' + 1} className="p-3 m-3 border-t">
                                         <div className="p-3 border-0 ring-1 ring-inset ring-gray-300 rounded-lg">
                                             <form onSubmit={(e) => handleReplySubmit(e, data.anserSen, replyContent)}>
                                                 <label className="block text-gray-900">
